@@ -5,7 +5,7 @@
   <description>
     The openni_tracker broadcasts the OpenNI skeleton frames using tf.
     This new version of the openni_tracker uses OpenNI2 and Nite2</description>
-  <maintainer email="marcus.liebhardt@yujinrobot.com">Marcus Liebhardt</maintainer>
+  <maintainer email="richard.bormann@ipa.fraunhofer.de">Richard Bormann</maintainer>
   
   <license>BSD</license>
   <url type="website">http://www.ros.org/wiki/openni_tracker</url>  
@@ -32,8 +32,11 @@
   <build_depend>pcl_ros</build_depend>
   <build_depend>image_transport</build_depend>
   <build_depend>cv_bridge</build_depend>
-  <build_depend>opencv2</build_depend>
   <build_depend>std_msgs</build_depend>
+  
+  <build_depend>libopencv-dev</build_depend>
+  <build_depend>glut</build_depend>
+  <build_depend>opengl</build_depend>
 
   <run_depend>libusb-1.0-dev</run_depend>
 <!--  <run_depend>libopenni-nite-dev</run_depend> -->
@@ -53,10 +56,12 @@
   <run_depend>pcl_ros</run_depend> 
   <run_depend>image_transport</run_depend>
   <run_depend>cv_bridge</run_depend>
-  <run_depend>opencv2</run_depend>
   <run_depend>std_msgs</run_depend>
   
+  <run_depend>libopencv-dev</run_depend>
   <run_depend>boost</run_depend>
+  <run_depend>glut</run_depend>
+  <run_depend>opengl</run_depend>
   
    <export>
   <nodelet plugin="${prefix}/nodelet.xml" />	
