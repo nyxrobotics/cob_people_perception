@@ -72,6 +72,7 @@
 
 // ROS message includes
 #include <sensor_msgs/Image.h>
+#include <spencer_tracking_msgs/DetectedPersons.h>
 //#include <sensor_msgs/PointCloud2.h>
 #include <cob_perception_msgs/DetectionArray.h>
 
@@ -113,6 +114,7 @@ protected:
 	message_filters::Synchronizer<message_filters::sync_policies::ApproximateTime<cob_perception_msgs::DetectionArray, sensor_msgs::Image> >* sync_input_2_;
 	message_filters::Subscriber<cob_perception_msgs::DetectionArray> face_position_subscriber_; ///< receives the face messages from the face detector
 	ros::Publisher face_position_publisher_; ///< publisher for the positions of the detected faces
+	ros::Publisher face_position_for_spencer_publisher_; ///< publisher for the positions of the detected faces
 
 	ros::NodeHandle node_handle_; ///< ROS node handle
 
@@ -166,7 +168,7 @@ public:
 	/// @return Return code.
 	unsigned long removeMultipleInstancesOfLabel();
 
-	unsigned long prepareFacePositionMessage(cob_perception_msgs::DetectionArray& face_position_msg_out, ros::Time image_recording_time, std::string frame_id);
+	unsigned long prepareFacePositionMessage(cob_perception_msgs::DetectionArray& face_position_msg_out, spencer_tracking_msgs::DetectedPersons& spencer_msgs, ros::Time image_recording_time, std::string frame_id);
 
 	/// checks the detected faces from the input topic against the people segmentation and outputs faces if both are positive
 	void inputCallback(const cob_perception_msgs::DetectionArray::ConstPtr& face_position_msg_in, const sensor_msgs::Image::ConstPtr& people_segmentation_image_msg);

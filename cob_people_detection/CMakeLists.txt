@@ -21,6 +21,7 @@ set(catkin_RUN_PACKAGES
 	std_srvs
 	stereo_msgs
 	tf
+	spencer_tracking_msgs
 )
 
 set(catkin_BUILD_PACKAGES

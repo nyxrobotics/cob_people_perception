@@ -160,6 +160,7 @@ DetectionTrackerNode::DetectionTrackerNode(ros::NodeHandle nh) :
 
 	// publishers
 	face_position_publisher_ = node_handle_.advertise<cob_perception_msgs::DetectionArray>("face_position_array", 1);
+	face_position_for_spencer_publisher_ = node_handle_.advertise<spencer_tracking_msgs::DetectedPersons>("face_position_for_spencer", 1);
 
 	std::cout << "DetectionTrackerNode initialized." << std::endl;
 }
@@ -349,10 +350,11 @@ unsigned long DetectionTrackerNode::removeMultipleInstancesOfLabel()
 	return ipa_Utils::RET_OK;
 }
 
-unsigned long DetectionTrackerNode::prepareFacePositionMessage(cob_perception_msgs::DetectionArray& face_position_msg_out, ros::Time image_recording_time, std::string frame_id)
+unsigned long DetectionTrackerNode::prepareFacePositionMessage(cob_perception_msgs::DetectionArray& face_position_msg_out, spencer_tracking_msgs::DetectedPersons& spencer_msgs, ros::Time image_recording_time, std::string frame_id)
 {
 	// publish face positions
 	std::vector < cob_perception_msgs::Detection > faces_to_publish;
+	std::vector<spencer_tracking_msgs::DetectedPerson> spencer_publish;
 	for (int i = 0; i < (int)face_position_accumulator_.size(); i++)
 	{
 		if (debug_)
@@ -362,6 +364,13 @@ unsigned long DetectionTrackerNode::prepareFacePositionMessage(cob_perception_ms
 				> min_face_identification_score_to_publish_) && ((image_recording_time - face_position_accumulator_[i].header.stamp)
 				< publish_currently_not_visible_detections_timespan_))
 		{
+			spencer_tracking_msgs::DetectedPerson detected_person;
+			geometry_msgs::PoseWithCovariance pose;
+			pose.pose = face_position_accumulator_[i].pose.pose;
+			detected_person.pose = pose;
+			detected_person.modality = "face";
+			detected_person.name = face_position_accumulator_[i].label;
+			spencer_publish.push_back(detected_person);
 			faces_to_publish.push_back(face_position_accumulator_[i]);
 			if (debug_)
 				std::cout << "published\n";
@@ -370,6 +379,7 @@ unsigned long DetectionTrackerNode::prepareFacePositionMessage(cob_perception_ms
 			std::cout << "not published\n";
 	}
 	face_position_msg_out.detections = faces_to_publish;
+	spencer_msgs.detections = spencer_publish;
 	// hack: for WimiCare replace 'Unknown' by '0000'
 	//        for (int i=0; i<(int)face_position_msg_out.detections.size(); i++)
 	//        {
@@ -626,9 +636,13 @@ void DetectionTrackerNode::inputCallback(const cob_perception_msgs::DetectionArr
 	ros::Time image_recording_time = (face_position_msg_in->detections.size() > 0 ? face_position_msg_in->detections[0].header.stamp : ros::Time(0));
 	std::string frame_id = (face_position_msg_in->detections.size() > 0 ? face_position_msg_in->detections[0].header.frame_id : "");
 	cob_perception_msgs::DetectionArray face_position_msg_out;
-	prepareFacePositionMessage(face_position_msg_out, image_recording_time, frame_id);
+	spencer_tracking_msgs::DetectedPersons msg_out;
+	prepareFacePositionMessage(face_position_msg_out, msg_out, image_recording_time, frame_id);
 	face_position_msg_out.header = face_position_msg_in->header;
+	msg_out.header = face_position_msg_in->header;
+
 	face_position_publisher_.publish(face_position_msg_out);
+	face_position_for_spencer_publisher_.publish(msg_out);
 
 	//  // display
 	//  if (debug_ == true)
