@@ -24,8 +24,8 @@ for Care-O-bot default is cam3d_nodelet_manager -->
   <group unless="$(arg using_nodelets)">
     <!-- launch files for usage without nodelets -->
     <include file="$(find cob_people_detection)/ros/launch/sensor_message_gateway.launch">
-      <arg name="colorimage_in_topic" value="/camera/qhd/image_color"/>
-      <arg name="pointcloud_rgb_in_topic" value="/camera/qhd/points"/>
+      <arg name="colorimage_in_topic" value="$(arg colorimage_in_topic)"/>
+      <arg name="pointcloud_rgb_in_topic" value="$(arg pointcloud_rgb_in_topic)"/>
     </include>
   </group>
   <group if="$(arg using_nodelets)">
