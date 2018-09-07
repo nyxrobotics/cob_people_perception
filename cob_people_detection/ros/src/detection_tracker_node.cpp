@@ -370,6 +370,14 @@ unsigned long DetectionTrackerNode::prepareFacePositionMessage(cob_perception_ms
 			detected_person.pose = pose;
 			detected_person.modality = "face";
 			detected_person.name = face_position_accumulator_[i].label;
+			const double LARGE_VARIANCE = 999999999;
+			const double pose_variance = 0.05;
+			detected_person.pose.covariance[0*6 + 0] = pose_variance;
+			detected_person.pose.covariance[1*6 + 1] = pose_variance; // up axis (since this is in sensor frame!)
+			detected_person.pose.covariance[2*6 + 2] = pose_variance;
+			detected_person.pose.covariance[3*6 + 3] = LARGE_VARIANCE;
+			detected_person.pose.covariance[4*6 + 4] = LARGE_VARIANCE;
+			detected_person.pose.covariance[5*6 + 5] = LARGE_VARIANCE;
 			spencer_publish.push_back(detected_person);
 			faces_to_publish.push_back(face_position_accumulator_[i]);
 			if (debug_)
