@@ -219,7 +219,11 @@ void FaceDetectorNode::head_positions_callback(const cob_perception_msgs::ColorD
 	{
 		FaceDetectionMessageHelper face_detection_message_helper;
 		cob_perception_msgs::DetectionArray detection_msg;
-		face_detection_message_helper.prepareCartesionDetectionMessage(detection_msg, head_positions->header, heads_depth_images, head_bounding_boxes, face_bounding_boxes, 0);
+		cob_perception_msgs::ColorDepthImageArray header_tmp;
+	    header_tmp.header = head_positions->header;
+        header_tmp.header.stamp = ros::Time::now();
+		face_detection_message_helper.prepareCartesionDetectionMessage(detection_msg, header_tmp.header, heads_depth_images, head_bounding_boxes, face_bounding_boxes, 0);
+		//face_detection_message_helper.prepareCartesionDetectionMessage(detection_msg, head_positions->header, heads_depth_images, head_bounding_boxes, face_bounding_boxes, 0);
 		face_position_publisher_cartesian_.publish(detection_msg);
 	}
 
